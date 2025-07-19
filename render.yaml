@@ -5,7 +5,7 @@ services:
   # This is a Private Service, meaning it's not exposed to the public internet.
   - type: pserv
     name: db
-    env: docker
+    runtime: docker
     image:
       url: mysql:8.0 # Use the official MySQL image
     disk:
@@ -27,7 +27,7 @@ services:
   # This is a Web Service, exposed to the internet.
   - type: web
     name: core-api
-    env: docker
+    runtime: docker
     dockerfilePath: ./core-api/Dockerfile # Path to the Dockerfile
     dockerContext: ./core-api # Context for the Docker build
     healthCheckPath: /health # Add a health check endpoint in your app
@@ -51,7 +51,7 @@ services:
   # This can be a Web Service or a Private Service depending on your needs.
   - type: web
     name: ai-engine
-    env: docker
+    runtime: docker
     dockerfilePath: ./ai-engine/Dockerfile # Path to the Dockerfile
     dockerContext: ./ai-engine # Context for the Docker build
     healthCheckPath: /
