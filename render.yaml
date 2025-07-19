@@ -37,9 +37,10 @@ services:
       - key: DATABASE_USER
         value: myuser
       - key: DATABASE_HOST
-        fromService: # Get the host from the 'db' service
+        fromService:
           type: pserv
           name: db
+          property: host # <-- This line was missing
       - key: DATABASE_PASSWORD
         fromService: # Get the password from the 'db' service
           type: pserv
