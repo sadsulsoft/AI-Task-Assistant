@@ -1,0 +1,41 @@
+# docker-compose.yml
+# For local development only. Render uses render.yaml.
+
+version: '3.8'
+
+services:
+  # Java Backend Service
+  core-api:
+    build:
+      context: ./core-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USER=myuser
+      - DATABASE_PASSWORD=mypassword
+      - DATABASE_NAME=mydatabase
+    depends_on:
+      - db
+
+  # Python AI Service
+  ai-engine:
+    build:
+      context: ./ai-engine
+    ports:
+      - "5000:5000"
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: myrootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:

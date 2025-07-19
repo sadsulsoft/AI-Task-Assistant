@@ -1,0 +1,56 @@
+# render.yaml - Deploys three services on Render
+
+services:
+  # 1. MySQL Database Service
+  # This is a Private Service, meaning it's not exposed to the public internet.
+  - type: pserv
+    name: db
+    env: docker
+    image:
+      url: mysql:8.0 # Use the official MySQL image
+    disk:
+      name: mysql-data # Name for the persistent disk
+      mountPath: /var/lib/mysql # Where to mount the disk
+      sizeGB: 1 # Size of the disk
+    envVars:
+      # Set database credentials using Render's secret files or environment variables
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true # Let Render generate a secure password
+      - key: MYSQL_DATABASE
+        value: mydatabase
+      - key: MYSQL_USER
+        value: myuser
+      - key: MYSQL_PASSWORD
+        generateValue: true # Let Render generate a secure password
+
+  # 2. Core API Service (Java)
+  # This is a Web Service, exposed to the internet.
+  - type: web
+    name: core-api
+    env: docker
+    dockerfilePath: ./core-api/Dockerfile # Path to the Dockerfile
+    dockerContext: ./core-api # Context for the Docker build
+    healthCheckPath: /health # Add a health check endpoint in your app
+    envVars:
+      - key: DATABASE_NAME
+        value: mydatabase
+      - key: DATABASE_USER
+        value: myuser
+      - key: DATABASE_HOST
+        fromService: # Get the host from the 'db' service
+          type: pserv
+          name: db
+      - key: DATABASE_PASSWORD
+        fromService: # Get the password from the 'db' service
+          type: pserv
+          name: db
+          envVarKey: MYSQL_PASSWORD
+
+  # 3. AI Engine Service (Python)
+  # This can be a Web Service or a Private Service depending on your needs.
+  - type: web
+    name: ai-engine
+    env: docker
+    dockerfilePath: ./ai-engine/Dockerfile # Path to the Dockerfile
+    dockerContext: ./ai-engine # Context for the Docker build
+    healthCheckPath: /
