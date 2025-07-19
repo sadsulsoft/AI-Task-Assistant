@@ -5,7 +5,7 @@ services:
   # This is a Private Service, meaning it's not exposed to the public internet.
   - type: pserv
     name: db
-    runtime: image
+    runtime: docker
     image:
       url: mysql:8.0 # Use the official MySQL image
     disk:
